@@ -39,7 +39,7 @@ ML-Driven-Branch-Predictor/
 ├── Dockerfile                   # Fully containerized reproducible environment
 ├── app.py                       # Streamlit interactive frontend
 ├── beast_target.cpp             # Adversarial C++ payload (Triggers aliasing)
-├── spec_microbench.cpp          # SPEC-style data-dependent C++ payload
+├── beast_target2.cpp          # SPEC-style data-dependent C++ payload
 ├── BranchDataGen.cpp            # Intel Pin tool (Records 5-column trace)
 ├── train_final.py               # XGBoost chronological training engine
 ├── extract_brain.py             # Converts model to ai_predictor.h via m2cgen
