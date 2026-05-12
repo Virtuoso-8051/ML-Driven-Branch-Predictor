@@ -1,0 +1,16 @@
+# Ignore massive Intel Pin trace data
+*.csv
+
+# Ignore compiled C++ executables (binaries with no extensions)
+beast_target
+beast_target2
+test_2bit
+trace_sim
+trace_sim_test
+
+# Ignore Python cache
+__pycache__/
+.pytest_cache/
+
+# Ignore backup readme
+00README.md

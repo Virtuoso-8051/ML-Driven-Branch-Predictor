@@ -1,0 +1,3 @@
+function Score([double[]] $InputVector) {
+    return @($(9.700311953536998 + $InputVector[0] * -0.4128360473754751 + $InputVector[1] * 0.9680426131053453 + $InputVector[2] * -2.498310603183548 + $InputVector[3] * -1.0723230787022542), $(2.1575759475871163 + $InputVector[0] * 0.5400806228605453 + $InputVector[1] * -0.3245383349519669 + $InputVector[2] * -0.2034493200950831 + $InputVector[3] * -0.9338183426196143), $(-11.857887901124615 + $InputVector[0] * -0.12724457548509432 + $InputVector[1] * -0.6435042781533917 + $InputVector[2] * 2.7017599232786216 + $InputVector[3] * 2.006141421321863))
+}
