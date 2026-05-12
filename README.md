@@ -39,7 +39,7 @@ ML-Driven-Branch-Predictor/
 ├── Dockerfile                   # Fully containerized reproducible environment
 ├── app.py                       # Streamlit interactive frontend
 ├── beast_target.cpp             # Adversarial C++ payload (Triggers aliasing)
-├── beast_target2.cpp          # SPEC-style data-dependent C++ payload
+├── beast_target2.cpp            # SPEC-style data-dependent C++ payload
 ├── BranchDataGen.cpp            # Intel Pin tool (Records 5-column trace)
 ├── train_final.py               # XGBoost chronological training engine
 ├── extract_brain.py             # Converts model to ai_predictor.h via m2cgen
@@ -63,7 +63,7 @@ This project is fully containerized to eliminate dependency issues (C++ compiler
 
 ~~~bash
 # 1. Clone the repository
-git clone [https://github.com/YOUR_USERNAME/ML-Driven-Branch-Predictor.git](https://github.com/YOUR_USERNAME/ML-Driven-Branch-Predictor.git)
+git clone https://github.com/Virtuoso-8051/ML-Driven-Branch-Predictor.git
 cd ML-Driven-Branch-Predictor
 
 # 2. Build the Docker Image
