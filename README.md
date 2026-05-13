@@ -24,7 +24,7 @@ We tested the model against a highly volatile C++ payload designed specifically 
 *   **XGBoost AI Model:** 99.68%
 *   **Conclusion:** A massive **28.56% performance domination**. By leveraging the 8-bit local history window, the AI successfully reverse-engineers periodic mathematical traps that permanently cripple legacy 2-bit state machines.
 
-### Test 2: The SPEC-Style Microbenchmark (Zero-Shot Testing)
+### Test 2: The SPEC-Style Microbenchmark (Zero-Shot Testing) 
 To test generalizability, we ran the frozen AI model against a completely unseen, data-dependent Lexical Analyzer state machine simulating SPEC 2017 integer benchmarks.
 *   **Classical 2-Bit Counter:** 97.40%
 *   **XGBoost AI Model:** 77.69%
