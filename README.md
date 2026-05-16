@@ -24,7 +24,7 @@ We tested the model against a highly volatile C++ payload designed specifically 
 *   **XGBoost AI Model:** 99.68%
 *   **Conclusion:** A massive **28.56% performance domination**. By leveraging the 8-bit local history window, the AI successfully reverse-engineers periodic mathematical traps that permanently cripple legacy 2-bit state machines.
 
-### Test 2: The SPEC-Style Microbenchmark (Zero-Shot Testing)
+### Test 2: The SPEC-Style Microbenchmark (Zero-Shot Testing) 
 To test generalizability, we ran the frozen AI model against a completely unseen, data-dependent Lexical Analyzer state machine simulating SPEC 2017 integer benchmarks.
 *   **Classical 2-Bit Counter:** 97.40%
 *   **XGBoost AI Model:** 77.69%
@@ -39,7 +39,7 @@ ML-Driven-Branch-Predictor/
 ├── Dockerfile                   # Fully containerized reproducible environment
 ├── app.py                       # Streamlit interactive frontend
 ├── beast_target.cpp             # Adversarial C++ payload (Triggers aliasing)
-├── spec_microbench.cpp          # SPEC-style data-dependent C++ payload
+├── beast_target2.cpp            # SPEC-style data-dependent C++ payload
 ├── BranchDataGen.cpp            # Intel Pin tool (Records 5-column trace)
 ├── train_final.py               # XGBoost chronological training engine
 ├── extract_brain.py             # Converts model to ai_predictor.h via m2cgen
@@ -63,7 +63,7 @@ This project is fully containerized to eliminate dependency issues (C++ compiler
 
 ~~~bash
 # 1. Clone the repository
-git clone [https://github.com/YOUR_USERNAME/ML-Driven-Branch-Predictor.git](https://github.com/YOUR_USERNAME/ML-Driven-Branch-Predictor.git)
+git clone https://github.com/Virtuoso-8051/ML-Driven-Branch-Predictor.git
 cd ML-Driven-Branch-Predictor
 
 # 2. Build the Docker Image
