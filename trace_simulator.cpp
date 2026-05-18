@@ -3,88 +3,119 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
-#include <cstdint>  // Needed for uint64_t and uint8_t
-#include <cmath>    // Needed for m2cgen math functions
-#include <cstring>  // Needed for safe memory handling in m2cgen
+#include <cstdint>
+#include <vector>
+#include <chrono>
 
-#include "ai_predictor.h" // The Transpiled Mega Brain
+// Include BOTH brains
+#include "ai_predictor_VANILLA.h"
+#include "ai_predictor_LATEST.h"
 
 using namespace std;
 
+// Struct to hold our branch data in RAM
+struct BranchRecord {
+    uint64_t pc;
+    uint64_t target;
+    int isBackward;
+    uint8_t localHistory;
+    int actual_taken;
+};
+
 int main() {
-    cout << "\n--- BOOTING BARE-METAL AI SIMULATOR ---" << endl;
+    cout << "\n==================================================" << endl;
+    cout << "   XGBOOST SILICON SHOWDOWN: VANILLA VS PATCHED   " << endl;
+    cout << "==================================================" << endl;
     
     ifstream file("branch_data.csv");
     string line;
 
     if (!file.is_open()) {
-        cout << "Error: Could not open branch_data.csv. Did you run the Pin tool?" << endl;
+        cout << "Error: Could not open branch_data.csv." << endl;
         return 1;
     }
 
-    // Skip the V2 header row ("PC,Target,IsBackward,LocalHistory,Taken")
-    getline(file, line);
+    getline(file, line); // Skip header
 
-    long long total_branches = 0;
-    long long correct_predictions = 0;
+    // 1. LOAD DATA INTO RAM (To isolate I/O latency from compute latency)
+    cout << "\n[1/3] Caching Adversarial Trace into RAM..." << endl;
+    vector<BranchRecord> traces;
+    // Reserve space to prevent reallocation slowdowns (assuming ~3M branches)
+    traces.reserve(3000000); 
 
-    cout << " -> Booting Bare-Metal AI Brain..." << endl;
-    cout << " -> Processing Adversarial Trace..." << endl;
-
-    // Read the file line by line
     while (getline(file, line)) {
-        // Skip empty lines to prevent stoi crashes
         if (line.empty()) continue; 
 
         stringstream ss(line);
         string pc_str, target_str, backward_str, hist_str, taken_str;
 
-        // Parse our 5-column CSV format safely
         getline(ss, pc_str, ',');
         getline(ss, target_str, ',');
         getline(ss, backward_str, ',');
         getline(ss, hist_str, ',');
-        
-        // FIX: Read to the end of the line (no comma delimiter) for the final column
         getline(ss, taken_str);
 
         try {
-            // Convert data types natively
-            uint64_t pc = stoull(pc_str, nullptr, 16);
-            uint64_t target = stoull(target_str, nullptr, 16);
-            int isBackward = stoi(backward_str);
-            uint8_t localHistory = static_cast<uint8_t>(stoi(hist_str));
-            int actual_taken = stoi(taken_str);
-
-            // AI makes its prediction in bare-metal C++
-            int predicted = AIPredictor::predict(pc, target, isBackward, localHistory);
-            
-            // Tally the score
-            if (predicted == actual_taken) {
-                correct_predictions++;
-            }
-
-            total_branches++;
-        } catch (const std::exception& e) {
-            // If there's a malformed row at the end of the CSV, gracefully skip it
+            BranchRecord rec;
+            rec.pc = stoull(pc_str, nullptr, 16);
+            rec.target = stoull(target_str, nullptr, 16);
+            rec.isBackward = stoi(backward_str);
+            rec.localHistory = static_cast<uint8_t>(stoi(hist_str));
+            rec.actual_taken = stoi(taken_str);
+            traces.push_back(rec);
+        } catch (...) {
             continue;
         }
     }
+    
+    long long total_branches = traces.size();
+    cout << "      Loaded " << total_branches << " branches successfully." << endl;
 
-    // Calculate final accuracy
-    if (total_branches == 0) {
-        cout << "Error: No valid branch data found." << endl;
-        return 1;
+    // 2. RUN VANILLA BENCHMARK
+    cout << "[2/3] Executing Vanilla Model (v1.7.3) Benchmarks..." << endl;
+    long long correct_vanilla = 0;
+    
+    auto start_vanilla = chrono::high_resolution_clock::now();
+    for (const auto& t : traces) {
+        if (AIPredictorVanilla::predict(t.pc, t.target, t.isBackward, t.localHistory) == t.actual_taken) {
+            correct_vanilla++;
+        }
     }
+    auto end_vanilla = chrono::high_resolution_clock::now();
+    auto duration_vanilla = chrono::duration_cast<chrono::nanoseconds>(end_vanilla - start_vanilla).count();
 
-    double accuracy = ((double)correct_predictions / total_branches) * 100.0;
+    // 3. RUN LATEST PATCHED BENCHMARK
+    cout << "[3/3] Executing Latest Model (v3.x Patched) Benchmarks..." << endl;
+    long long correct_latest = 0;
+    
+    auto start_latest = chrono::high_resolution_clock::now();
+    for (const auto& t : traces) {
+        if (AIPredictorLatest::predict(t.pc, t.target, t.isBackward, t.localHistory) == t.actual_taken) {
+            correct_latest++;
+        }
+    }
+    auto end_latest = chrono::high_resolution_clock::now();
+    auto duration_latest = chrono::duration_cast<chrono::nanoseconds>(end_latest - start_latest).count();
 
-    cout << "\n==========================================" << endl;
-    cout << "          C++ SIMULATION COMPLETE!        " << endl;
-    cout << "  Total Branches:  " << total_branches << endl;
-    cout << "  Correct Guesses: " << correct_predictions << endl;
-    cout << "  C++ AI ACCURACY: " << fixed << setprecision(2) << accuracy << "%" << endl;
-    cout << "==========================================\n" << endl;
+    // 4. CALCULATE METRICS
+    double acc_vanilla = ((double)correct_vanilla / total_branches) * 100.0;
+    double acc_latest = ((double)correct_latest / total_branches) * 100.0;
+    
+    double ns_per_branch_vanilla = (double)duration_vanilla / total_branches;
+    double ns_per_branch_latest = (double)duration_latest / total_branches;
+
+    // 5. PRINT THE SHOWDOWN RESULTS
+    cout << "\n==================================================" << endl;
+    cout << "             FINAL C++ HARDWARE METRICS           " << endl;
+    cout << "==================================================" << endl;
+    cout << left << setw(20) << "Metric" << " | " << setw(12) << "Vanilla" << " | " << "Latest (Patched)" << endl;
+    cout << "--------------------------------------------------" << endl;
+    
+    cout << left << setw(20) << "Total Branches" << " | " << setw(12) << total_branches << " | " << total_branches << endl;
+    cout << left << setw(20) << "Correct Guesses" << " | " << setw(12) << correct_vanilla << " | " << correct_latest << endl;
+    cout << left << setw(20) << "Hardware Accuracy" << " | " << fixed << setprecision(3) << acc_vanilla << "%  | " << acc_latest << "%" << endl;
+    cout << left << setw(20) << "Latency / Branch" << " | " << fixed << setprecision(2) << ns_per_branch_vanilla << " ns  | " << ns_per_branch_latest << " ns" << endl;
+    cout << "==================================================\n" << endl;
 
     return 0;
 }
