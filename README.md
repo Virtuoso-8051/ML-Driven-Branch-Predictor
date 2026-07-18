@@ -1,5 +1,5 @@
 # ML-Driven Branch Predictor: AI vs. Hardware Hysteresis
-**Authors:** Anurag Raj & Aditi Chauhan
+**Authors:** Aditi Chauhan & Anurag Raj
 
 > A high-performance Computer Architecture project that replaces traditional legacy 2-bit saturating counters with an XGBoost-based Machine Learning ensemble. This project uses Intel Pin to extract real-time execution traces, trains an AI model, and transpiles it to bare-metal C++ to evaluate its ability to predict adversarial branch patterns.
 
@@ -36,17 +36,48 @@ To test generalizability, we ran the frozen AI model against a completely unseen
 
 ~~~text
 ML-Driven-Branch-Predictor/
-├── Dockerfile                   # Fully containerized reproducible environment
-├── app.py                       # Streamlit interactive frontend
-├── beast_target.cpp             # Adversarial C++ payload (Triggers aliasing)
-├── beast_target2.cpp            # SPEC-style data-dependent C++ payload
-├── BranchDataGen.cpp            # Intel Pin tool (Records 5-column trace)
-├── train_final.py               # XGBoost chronological training engine
-├── extract_brain.py             # Converts model to ai_predictor.h via m2cgen
-├── ai_predictor.h               # Auto-generated prediction logic (C++)
-├── branch_predictor_brain.json  # Saved XGBoost model weights
-├── m2cgen_patched/              # Custom transpilation library
-└── .streamlit/config.toml       # Streamlit server configurations
+│
+├── .streamlit/                         # UI config              
+│
+├── data_and_models/                    # Generated artifacts
+│   ├── branch_predictor_brain.json     # Saved XGBoost model weights    
+│   ├── branch_predictor_brain_DOWNGRADED.json  
+│   └── branch_predictor_brain_LATEST.json     
+│
+├── assets/                             # Documentation assets
+│   ├── screenshot_1.png                
+│   └── screenshot_2.png
+|
+├── src/                                # Main Source Code
+│   ├── data_extraction/
+│   │   ├── BranchDataGen.cpp           # Extracts traces using pin tool (custom 5-cols meta-data)
+│   │   └── extract_brain.py            # Extracts brain using 80% of traces
+│   │
+│   ├── model_training/
+│   │   └── train_final.py              # XGBoost training script
+│   │
+│   ├── transpilation/
+│   │   ├── m2cgen_patched/             # My own m2cgen patched library
+│   │   ├── transpile_latest.py       
+│   │   └── transpile_vanilla.py     
+│   │
+│   └── z_simulator_cpp/                # The bare-metal benchmarking engine
+│       ├── ai_predictor.h              # Auto-generated prediction logic (C++)
+│       ├── ai_predictor_LATEST.h       
+│       ├── ai_predictor_VANILLA.h      
+│       ├── main_predictor.cpp        
+│       ├── test_2bit.cpp               # Custome 2-bit saturating code 
+│       └── trace_simulator.cpp         
+│
+├── target_workloads/                   # The dummy code I ran through Intel Pin
+│   ├── beast_target.cpp                # Adversarial C++ payload (Triggers aliasing)
+│   └── beast_target2.cpp               # SPEC-style data-dependent C++ payload
+│
+├── .gitattributes
+├── .gitignore
+├── Dockerfile                          # Fully containerized reproducible environment
+|── README.md
+├── app.py                              # Streamlit interactive frontend                        
 ~~~
 
 ---
