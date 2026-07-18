@@ -146,6 +146,6 @@ streamlit run app.py
 
 ## 📸 Dashboard Previews
 
-![Streamlit UI - Upload & Simulation](screenshot_1.png)
+![Streamlit UI - Upload & Simulation](assets/screenshot_1.png)
 
-![Streamlit UI - Rolling Accuracy & Visualizations](screenshot_2.png)
+![Streamlit UI - Rolling Accuracy & Visualizations](assets/screenshot_2.png)
